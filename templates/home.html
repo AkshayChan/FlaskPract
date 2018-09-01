@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="en">
+<head>
+  
+  <title>My Application</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  
+  <!-- jQuery and Popper -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  
+  <!-- Bootstrap -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  
+  <!-- bootstrap-table, bootstrap-select and datatable plugin -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/datatable/2.0.1/js/datatable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/datatable/2.0.1/js/datatable.jquery.min.js"></script>
+  <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/yadcf/0.9.3/jquery.dataTables.yadcf.js"></script>
+  <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
+  
+  <!-- CSS forbootstrap-table and bootstrap-select and datatable -->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/datatable/2.0.1/css/datatable.min.css">
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/yadcf/0.9.3/jquery.dataTables.yadcf.css">
+  
+</head>
+<body>
+
+  <!-- Header, the top part of the page -->
+  <div class="container-fluid">
+   <div class="table-title">
+      <div class="row">
+        <div class="col-sm-4">
+					<h2>Escalation <b> View</b></h2>
+				</div>
+				<div class="col-sm-8">						
+					<a href="javascript:void(0)" class="btn btn-primary" id="saveButton"><i class="material-icons">&#xE863;</i> <span>Save List</span></a>
+					<a href="javascript:void(0)" class="btn btn-info" id="exportButton"><i class="material-icons">&#xE24D;</i> <span>Export to Excel</span></a>
+					<a href="{{ url_for('index') }}" class="btn btn-primary" id=""<i class="material-icons"></i><span>Bincheck View</span></a>
+				</div>
+      </div>
+    </div>
+  <p></p>
+  </div>
+  
+  <!-- Filters outside the body -->
+  <div class ="container-fluid">
+    <div class="form-group row">
+      <div class="col-xs-2">
+        <div id="FCSelect"></div>
+      </div>
+      <div class="col-xs-2">
+        <div id="RegionSelect"></div>
+      </div>
+      <div clas="col-xs-2">
+        <div id="ASINSelect"></div>
+      </div>
+      <div class="col-xs-4">
+        <div id="DPMOThreshold"></div>
+      </div>
+      <div clas="col-xs-2">
+        <div id="ConcWeek"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Table -->
+  <div class = "table-responsive">
+    <table class="table table-nonfluid table-sm", id="myTable"> 
+    
+    <thead class="thead-dark">
+      <tr>
+        <th style = "width:200px;">FC Type</th>
+        <th style = "width:110px">FC Region</th>
+        <th style = "width:100px">ASIN</th>
+        <th style = "width:200px">Title</th>
+        <th style = "width:200px">Product Group</th>
+        <th style = "width:110px">Average DPMO</th>
+        <th style = "width:60px">Average Cost</th>
+        <th style = "">Concession Week</th>
+        <th style = "width:60px">Bin checks done</th>
+        <th style = "width:200px">Action Item</th>
+        <th data-editable = "true" style = "width:200px">Comments</th>
+        <th>Escalation done</th>
+      </tr>
+    </thead>
+    
+    <!-- NOT USED -->
+    <!-- Hardcoded body -->
+    <!--
+    <tbody>
+      <tr>
+        <td>Sortable</td>
+        <td>UK</td>
+        <td>B0000934FH</td>
+        <td>iPhone 10 64GB Black</td>
+        <td>Wireless Smartphone</td>
+        <td>11435</td>
+        <td>143</td>
+        <td>3/4</td>
+        <td>
+          <select class="custom-select">
+            <option>Vendor Action</option>
+            <option>Prep Instance</option>
+            <option>Stop Sell</option>
+          </select>
+        </td>
+        <td><input class="form-control form-control-sm" type="text" placeholder="Enter Here"></td>
+        <td><div class="checkbox checkbox-success"><input type="checkbox" id="checkbox1" class="styled"><label></label></div></td>
+      </tr>
+      <tr>
+        <td>Non-Sortable</td>
+        <td>SEU</td>
+        <td>B00009GHBA</td>
+        <td>Samsung smart TV</td>
+        <td>Electronics</td>
+        <td>13679</td>
+        <td>280</td>
+        <td>2/4</td>
+        <td>
+          <select class="custom-select">
+            <option>Vendor Action</option>
+            <option>Prep Instance</option>
+            <option>Stop Sell</option>
+          </select>
+        </td>
+        <td><input class="form-control form-control-sm" type="text" placeholder="Enter Here"></td>
+        <td><div class="checkbox checkbox-success"><input type="checkbox" id="checkbox2" class="styled"><label></label></div></td>
+      </tr>
+      <tr>
+        <td>Fashion</td>
+        <td>EU</td>
+        <td>B00009ABCD</td>
+        <td>USPA black polo 36</td>
+        <td>Style and Clothing</td>
+        <td>12786</td>
+        <td>453</td>
+        <td>2/5</td>
+        <td>
+          <select class="custom-select">
+            <option>Vendor Action</option>
+            <option>Prep Instance</option>
+            <option>Stop Sell</option>
+          </select>
+        </td>
+        <td><input class="form-control form-control-sm" type="text" placeholder="Enter Here"></td>
+        <td><div class="checkbox checkbox-success"><input type="checkbox" id="checkbox3" class="styled"><label></label></div></td>
+      </tr>
+      <tr>
+        <td>Sortable</td>
+        <td>EU</td>
+        <td>B0000934FH</td>
+        <td>iPhone 10 64GB Black</td>
+        <td>Wireless Smartphone</td>
+        <td>12456</td>
+        <td>184</td>
+        <td>1/4</td>
+        <td>
+          <select class="custom-select">
+            <option>Vendor Action</option>
+            <option>Prep Instance</option>
+            <option>Stop Sell</option>
+          </select>
+        </td>
+        <td><input class="form-control form-control-sm" type="text" placeholder="Enter Here"></td>
+        <td><div class="checkbox checkbox-success"><input type="checkbox" id="checkbox4" class="styled"><label></label></div></td>
+      </tr>
+      <tr>
+        <td>Non-Sortable</td>
+        <td>UK</td>
+        <td>B00009GHBA</td>
+        <td>Samsung smart TV</td>
+        <td>Electronics</td>
+        <td>11289</td>
+        <td>578</td>
+        <td>4/4</td>
+        <td>
+          <select class="custom-select">
+            <option>Vendor Action</option>
+            <option>Prep Instance</option>
+            <option>Stop Sell</option>
+          </select>
+        </td>
+        <td><input class="form-control form-control-sm" type="text" placeholder="Enter Here"></td>
+        <td><div class="checkbox checkbox-success"><input type="checkbox" id="checkbox5" class="styled"><label></label></div></td>
+      </tr>
+      <tr>
+        <td>Non-Sortable</td>
+        <td>EU</td>
+        <td>B00009GHBA</td>
+        <td>Samsung smart TV</td>
+        <td>Electronics</td>
+        <td>13535</td>
+        <td>346</td>
+        <td>3/5</td>
+        <td>
+          <select class="custom-select">
+            <option>Vendor Action</option>
+            <option>Prep Instance</option>
+            <option>Stop Sell</option>
+          </select>
+        </td>
+        <td><input class="form-control form-control-sm" type="text" placeholder="Enter Here"></td>
+        <td><div class="checkbox checkbox-success"><input type="checkbox" id="checkbox6" class="styled"><label></label></div></td>
+      </tr>
+      <tr>
+        <td>Fashion</td>
+        <td>UK</td>
+        <td>B00009ABCD</td>
+   
+        <td>USPA black polo 36</td>
+        <td>Style and Clothing</td>
+        <td>12679</td>
+        <td>172</td>
+        <td>1/5</td>
+        <td>
+          <select class="custom-select">
+            <option>Vendor Action</option>
+            <option>Prep Instance</option>
+            <option>Stop Sell</option>
+          </select>
+        </td>
+        <td><input class="form-control form-control-sm" type="text" placeholder="Enter Here"></td>
+        <td><div class="checkbox checkbox-success"><input type="checkbox" id="checkbox7" class="styled"><label></label></div></td>
+      </tr>
+    </tbody>
+    -->
+    
+  </table>
+    </div>
+  <center><div id ="paging"></div></center>
+
+  <!-- Modal class for displaying the pop up -->
+  <div id="gridSystemModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="gridModalLabel">Bincheck Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <div class="container-fluid bd-example-row">
+            <div class="row">
+              <div class="col-md-12" >
+				        <table id="detailsTable" cellspacing=2 cellpadding=2 border=1 width="100%"></table>
+			        </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+<!-- Creating view from stored data and adding filters -->
+<script>
+var processedData = [],
+GroupBy = ['ASIN', 'Concession_Week'];
+$(document).ready(function(){
+	var oldData = JSON.parse(localStorage.getItem('myViewStorage1'));
+	var savedProcessedData = JSON.parse(localStorage.getItem('myViewStorage2'));
+  //dataTable is a plugin for creating standard tables
+  //Here we create the columns to be displayed and their values 
+	var dataTableOptions = {
+	 "rowId": "ASIN",
+	 "columns": [
+            { "data": "FC_Type" },
+            { "data": "Region" },
+            { "data": "ASIN" },
+            { "data": "Item_Name" },
+            { "data": "Product_Group" },
+			      { "data": "DPMO_6_Month" },
+			      { "data": "Cost_USD_6_Month" },
+			      { "data": "Concession_Week" },
+			      { "data": "count", render: function(row, type, data) {
+				      var values = [];
+				      //Push ASIN and Week data
+      				for(var i=0; i<GroupBy.length; i++) {
+      					values.push(data[GroupBy[i]]);
+      				}
+      				return '<span class="clickableSpan" title="Click for the list of ASINs" onclick=\'showDetails('+JSON.stringify(values)+')\'>'+ data.count +'</span>';
+      			}},
+      			{ "data": null, orderable: false, render: function(row, type, data, meta) { 
+      				var options = ["", "Vendor Item", "Stop Sell"];
+      				var optText = "";
+      				for(var i=0; i<options.length; i++) {
+      					optText += '<option ' + (data.action===options[i]?'selected':'')  + ' value="' + options[i] + '" >' + options[i] + '</option>';
+      				}
+      				return '<select class="custom-select" style="width:100%;" onchange="update('+meta.row+',\'action\', this)" >'+ optText + '</select>'; 
+      			}},
+      			{ "data": null, orderable: false, render: function(row, type, data, meta) { 
+      				var vText = data.comment ? 'value="'+ data.comment +'"' : 'value=""';
+      				return '<input class="form-control form-control-sm" type="text" placeholder="Enter Here" '+ vText +' onkeyup="update('+meta.row+',\'comment\',this)" />'; 
+      			}},
+      			{ "data": null, orderable: false, render: function(row, type, data, meta) {
+      				var chk = (data.escCheck === "Y") ? "checked" : "";
+      				return '<div class="checkbox checkbox-success"><input type="checkbox" id="checkbox7" class="styled" '+ chk +' onchange="update('+meta.row+',\'escCheck\', this)"  value="'+ (!data.escCheck?'':data.escCheck)  +'" /></div>'; 
+      			}}			
+          ]
+   };
+  /*Read the bincheck data from the local storage
+  If the bincheck was done, check if the entry has been made
+	for ASIN and week. If not, create a new entry. 
+	If the ASIN for that week already exists, update the summary entry*/
+  
+	if(oldData) {
+	   for(var i=0; i<oldData.length; i++) {
+			var rowd = oldData[i];
+			
+			//getValuesArray and mContainsIn are functions to get the 
+			//ASIN + Week values and check if they uniquely exists respectively
+			if(rowd.binCheck ==="Y") {
+				var values = getValuesArray(rowd, GroupBy);
+				var idx = mContainsIn(processedData, GroupBy, values);				
+				if( idx == -1 ) {
+					processedData.push( {
+						"FC_Type": rowd["FC_Type"],
+						"Region": rowd["Region"],
+						"ASIN" : rowd["ASIN"],
+						"Item_Name": rowd["Item_Name"],
+						"Product_Group": rowd["Product_Group"],
+						"Cost_USD_6_Month": parseInt(rowd["Cost_USD_6_Month"]),
+						"DPMO_6_Month": parseInt(rowd["DPMO_6_Month"]),
+						"Concession_Week": rowd["Concession_Week"],
+						"binCheck": rowd["binCheck"],
+						"count": 1,
+						"details": [
+							{
+								"ASIN": rowd["ASIN"],
+								"Concession_Reason": rowd["Concession_Reason"],
+								"Customer_Comments": rowd["Customer_Comments"],
+								"comment": rowd["comment"],
+								"rootCause": rowd["rootCause"]
+							}
+						]
+					});
+				} else {
+					processedData[idx].count++;
+					processedData[idx]["Cost_USD_6_Month"] = (processedData[idx]["Cost_USD_6_Month"] + parseInt(rowd["Cost_USD_6_Month"]));
+					processedData[idx]["DPMO_6_Month"] = (processedData[idx]["DPMO_6_Month"] + parseInt(rowd["DPMO_6_Month"]));
+					processedData[idx]["details"].push({
+						"ASIN": rowd["ASIN"],
+						"Concession_Reason": rowd["Concession_Reason"],
+						"Customer_Comments": rowd["Customer_Comments"],
+						"comment": rowd["comment"],
+						"rootCause": rowd["rootCause"]
+					});	
+				}		
+			}
+	   }
+	   //Taking the average of the DPMO and Cost. Need to round off. 
+	   for(var i=0; i<processedData.length; i++) {
+			processedData[i]["Cost_USD_6_Month"] = Math.round(processedData[i]["Cost_USD_6_Month"]/processedData[i]["count"]);
+			processedData[i]["DPMO_6_Month"] = Math.round(processedData[i]["DPMO_6_Month"]/processedData[i]["count"]);
+	   }	
+	}
+  
+  //Check to see if the data has already been saved.
+  //Then directly get the values for the last three rows.
+  if(savedProcessedData) {
+	   for(var i=0; i<processedData.length; i++) {
+			var idx = mContainsIn(savedProcessedData, GroupBy, getValuesArray(processedData[i], GroupBy) );
+			if(idx > -1) {
+				var spd = savedProcessedData[idx];
+				processedData[i].action = spd.action;
+				processedData[i].comment = spd.comment;
+				processedData[i].escCheck = spd.escCheck;
+			}
+	   }
+   }
+   
+  dataTableOptions.data =  processedData;
+  var mytable = $('#myTable').DataTable(dataTableOptions);
+  
+  var mTable = $('#myTable').DataTable();
+  
+  //Filters using the yadcf plugin
+  yadcf.init(mTable, [
+    {column_number : 0, filter_container_id : "FCSelect", filter_reset_button_text: false, filter_default_label: "FC Type"},
+    {column_number : 1, filter_container_id : "RegionSelect", filter_reset_button_text: false, filter_default_label: "FC Region"},
+    {column_number : 2, filter_container_id : "ASINSelect", filter_reset_button_text: false, filter_default_label: "ASIN"},
+    {column_number : 5, filter_type: "range_number", filter_container_id : "DPMOThreshold", 
+    html_data_type: "value", filter_reset_button_text : false},
+    {column_number : 7, filter_container_id : "ConcWeek", filter_reset_button_text: false, filter_default_label: "Week"},
+  ]);
+  
+  //Saving the data to the local storage
+  $("#saveButton").click(function () {
+		localStorage.setItem('myViewStorage2', JSON.stringify(processedData));		
+		alert("Data saved successfully!");
+   });
+   
+  //Exporting the data to an excel sheet
+	$("#exportButton").click(function () {
+		var clonedMyTable = $("#myTable").clone();
+		$(clonedMyTable).attr("id", "clonedMyTable");
+		//There's no exclude_select in table2excel plugin.
+		//So handle it here. 
+		$("select", clonedMyTable).each(function(idx, ele) {
+			var value = $(ele).val();
+			$(ele).after("<span>"+value+"</span>");
+			$(ele).remove(); //remove the select
+		});
+		$(clonedMyTable).table2excel({
+			exclude_inputs: true, //will remove the text/checkbox
+			name: "Bincheck View Data",
+			filename: "Bincheck View" 
+		}); 
+	});   
+});
+//Check if the ASIN + Week are there as a unique entry
+function mContainsIn(ary, keys, values) {
+	for(var i=0; i<ary.length; i++) {
+		var flag = true;
+		for(var k=0; k<keys.length; k++) {
+			flag = flag && ary[i][keys[k]]===values[k];
+		}
+		if(flag) return i;
+	}
+	return -1;	
+}
+//Get the ASIN + Week value for the entry
+function getValuesArray(rowData, keys) {
+	var values = [];
+	for(var i=0; i<keys.length; i++) {
+		values.push( rowData[keys[i]] );
+	}
+	return values;
+}
+//Displaying the pop up details
+function showDetails(values) {
+	var idx = mContainsIn(processedData, GroupBy, values);
+	var dt = processedData[idx]["details"];
+	var html = '<tr class="table-active"><th>Sr No</th><th>ASIN</th><th>Concession Reason</th><th>Root Cause</th><th>Comments</th></tr>';
+	for(var i=0; i<dt.length; i++) {
+		html += '<tr class="table-success">'
+			+ '<td>' + (i+1) + '</td>'
+			+ '<td>' + dt[i]["ASIN"] + '</td>'
+			+ '<td>' + dt[i]["Concession_Reason"] + '</td>'
+			+ '<td>' + dt[i]["rootCause"] + '</td>'
+			//+ '<td>' + dt[i]["Customer_Comments"] + '</td></tr>';
+			+ '<td>' + dt[i]["comment"] + '</td></tr>';
+	}
+	$("#detailsTable").html( html );
+	$("#gridSystemModal").modal({show:true});
+}
+//Will update the original data object, ignores the filtered html table.
+function update(ridx, fieldName, elem) {
+	//dataTableData[ridx][fieldName]
+	var value = '';
+	switch(elem.type) {
+		case "text":
+			 value = $(elem).val();
+			 $(elem).attr("value", value);//set in maskup
+			break;
+		case "checkbox":
+			value = $(elem).is(":checked") ? 'Y' : 'N';
+			$(elem).val(value);
+			if(value==='Y') $(elem).attr('checked','checked');
+			else $(elem).removeAttr('checked');
+			break;
+		case "select-one":
+		case "select":
+			value = $(elem).val();
+			$("option[value='" + value + "']", $(elem))
+				.attr("selected", true)
+				.siblings().removeAttr("selected");			
+	}
+	processedData[ridx][fieldName] = value;
+	console.log(ridx, fieldName, processedData[ridx][fieldName]);
+};
+</script>
+
+<!-- Styling for the elements -->
+<style type="text/css">
+  .clickableSpan {
+	text-decoration: underline;
+	cursor: pointer;
+  }
+  .checkbox {
+    margin-left: 30px;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+    display: block;
+    font-size: 14px
+  }
+  .custom-select {
+    height: 70%;
+    font-size: 12px;
+    font: Arial;
+  }
+  
+  .form-control.form-control-sm {
+    height: 120%;
+    font-size: 12px;
+  }
+  
+  .table-title {
+		color: #fff;
+		background: #4b5366;		
+		padding: 16px 25px;
+		margin: 20px -25px 10px;
+		border-radius: 3px 3px 0 0;
+  }
+    
+  .table-title h2 {
+		margin: 7px 0 0;
+		font-size: 26px;
+	 }
+	 
+	.table-title .btn {		
+	  float: right;
+		font-size: 13px;
+		border: none;
+		margin-left: 10px;
+	}
+	
+	.table-title .btn i {
+		float: left; 
+		font-size: 21px;
+		margin-right: 5px;
+	}
+	
+	.table-title .btn span {
+		float: left; 
+		font-size: 18px;
+		margin-top: 2px;
+	}
+  .form-group{
+   float: left;
+   margin-left:-5px;
+   margin-right: -5px;
+  }
+  
+  #FCSelect {
+    margin-left: 375px;
+    margin-top: 8px;
+    height: 80%;
+    width: 90%;
+  }
+  
+  #RegionSelect {
+    margin-left: 25px;
+    margin-top: 8px;
+    height: 80%;
+    width: 90%;
+  }
+  
+  #ASINSelect {
+    margin-left: 25px;
+    margin-top: 8px;
+    height: 80%;
+    width:90%;
+  }
+  
+  #DPMOThreshold {
+    margin-left: 25px;
+    margin-top: 8px;
+    height: 80%;
+    width:90%;
+  }
+  
+  #ConcWeek {
+    margin-left: 25px;
+    margin-top: 8px;
+    height: 80%;
+    width:90%;
+  }
+  
+  #myInput {
+    margin-left: 25px;
+    margin-top: 8px;
+    height: 80%;
+    width: 80%;
+  }
+  
+  #myBt {
+    margin-left: 25px;
+    margin-top: 8px;
+    height: 80%;
+  }
+  
+  #myBt2 {
+    margin-left: 25px;
+    margin-top: 8px;
+    height: 80%;
+  }
+  
+</style>
+
+<!-- NOT USED -->
+<!-- Created standard/other filters and frontend -->
+<script>
+$(document).ready(function(){
+  /*var valueASIN, valueDPMO;
+  
+  $("#ASIN").on("click", function() {
+    valueASIN = this;
+  });
+    
+  $('#myInput').keyup(function() {
+    var that = this;
+    $.each($('tr'),
+    function(i, val) {
+        if ($(val).text().indexOf($(that).val()) == -1 && i!=0) {
+            $('tr').eq(i).hide();
+        } else {
+            $('tr').eq(i).show();
+        }
+    });
+  });
+  
+  $("#DPMOThreshold").on("click", function() {
+    valueDPMO = this
+  });
+   
+   $("#myBt").on("click", function() {
+      $.each($('tr'),
+      function(i, val) {
+        if (i!=0) {
+          var customerId = $('tr').eq(i).find('td').eq(2)
+          if ($(val).text().indexOf($(valueASIN).val()) == -1 && $(valueASIN).val() != "ASIN") 
+              $('tr').eq(i).hide();
+          else if(parseInt(customerId.text().replace(/([^0-9\\.])/g,"")) < parseInt($(valueDPMO).val()) && $(valueDPMO).val() != "DPMO")  
+            $('tr').eq(i).hide();
+          else 
+            $('tr').eq(i).show();
+        }
+      });
+   });
+   
+   $("#myBt2").on("click", function() {
+    $.each($('tr'),
+    function(i, val) {
+      $('tr').eq(i).show();
+    });
+   });
+   
+   $("#exportButton").click(function () {
+    $("#myTable").table2excel({
+	    // exclude CSS class
+	    name: "Bincheck View Data",
+	    filename: "Bincheck View" //do not include extension
+	  }); 
+   });*/
+   
+   /*
+   $('#myTable').datatable({
+    pageSize: 10,
+    sort: [true, true, true, true, true, true, true, true, true, true],
+    filters: {
+      0 : 'select', 
+      1 : 'select', //{ element : $("#ASIN"), values : {B0000934FH: "B0000934FH", B00009HYTD: "B00009HYTD"} },
+      2 : true,
+      3 : false,
+      4 : false,
+      5 : { values: ['   ', '12K', '13K'],
+            fn: function (data, selected) { 
+              if (selected.length === 1) {
+                if (selected[0] === "0") {
+                  return data
+                }
+                else if (selected[0] == "1") {
+                  return data >= 12000;
+                }
+                else {
+                  return data >= 13000;
+                }
+            } 
+            return true;
+           }
+          }, 
+      6 : false,
+      7 : false,
+      8 : false
+    },
+    pagingDivSelector: "#paging",
+    paginDivClass: "pagination pagination-centered"
+   });*/
+});
+</script>
+
+</body>  
+</html>

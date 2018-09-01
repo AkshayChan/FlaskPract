@@ -1,0 +1,956 @@
+<!doctype html>
+<html lang="en">
+<head>
+  
+  <title>My Application</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  
+  <!-- jQuery and Popper -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  
+  <!-- Bootstrap -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  
+  <!-- bootstrap-table, bootstrap-select and datatable plugin -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/datatable/2.0.1/js/datatable.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/datatable/2.0.1/js/datatable.jquery.min.js"></script>
+  <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/yadcf/0.9.3/jquery.dataTables.yadcf.js"></script>
+  <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
+  
+  <!-- CSS forbootstrap-table and bootstrap-select and datatable -->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/datatable/2.0.1/css/datatable.min.css">
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"> 
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/yadcf/0.9.3/jquery.dataTables.yadcf.css">
+  
+</head>
+<body>
+  
+  <!-- Header, the top part of the page -->
+  <div class="container-fluid">
+   <div class="table-title">
+      <div class="row">
+        <div class="col-sm-4">
+          <h2>Bincheck <b> View </b></h2>
+        </div>
+        <div class="col-sm-8">            
+          <a href="javascript:void(0)" class="btn btn-primary" id="saveButton"><i class="material-icons">&#xE863;</i> <span>Save List</span></a>
+          <a href="javascript:void(0)" class="btn btn-info" id="exportButton"><i class="material-icons">&#xE24D;</i> <span>Export to Excel</span></a>
+		      <a href="{{ url_for('home') }}" class="btn btn-primary" id=""<i class="material-icons"></i><span>Escalation View</span></a>
+        </div>
+      </div>
+    </div>
+  <p></p>
+  </div>
+  
+  <!-- Filters outside the body -->
+  <div class ="container-fluid">
+    <div class="form-group row">
+      <div class="col-xs-2">
+        <div id="FCSelect"></div>
+      </div>
+      <div class="col-xs-2">
+        <div id="ASINSelect"></div>
+      </div>
+      <div class="col-xs-4">
+        <div id="DPMOThreshold"></div>
+      </div>
+      <div clas="col-xs-2">
+        <div id="ConcWeek"></div>
+      </div>
+      <div clas="col-xs-2">
+        <div id="WrongDam"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Table -->
+  <div class = "table-responsive">
+    <table class="table table-striped table-sm", id="myTable"> 
+    
+    <thead class="thead-dark">
+      <tr>
+        <th style="width:100px;">FC</th>
+        <th style="width:85px;">ASIN</th>
+        <th style="width:130px;">Item Name</th>
+        <th>Product Group</th>
+        <th>Bin ID</th>
+        <th style="width:90px;">DPMO</th>
+        <th>Cost</th>
+        <th style="width: 120px;" >Concession Week</th>
+        <th style="width: 92px;">Concession Reason</th>
+        <th data-align = "center" style="width: 150px;" >Root Cause</th>
+        <th data-editable = "true" style="width:130px;" >Comments</th>
+        <th>Bincheck done</th>
+      </tr>
+    </thead>
+    
+    <!-- NOT USED -->
+    <!-- Looped body -->
+    <!--
+    <tbody>
+      {% for value in user %}
+      <tr>
+        <td></td>
+        <td>{{ value.Warehouse_ID }}</td>
+        <td>{{ value.ASIN }}</td>
+        <td>{{ value.Item_Name }}</td>
+        <td>{{ value.Product_Group }}</td>
+        <td>{{ value.Bin_ID }}</td>
+        <td>{{ value.DPMO_6_Month }}</td>
+        <td>{{ value.Cost_Week }}</td>
+        <td>{{ value.Concession_Week }}</td>
+        <td>{{ value.Concession_Reason }}</td>
+        <td>
+          <select class="custom-select" id="sel" style="width:100%;">
+            <option>Glass Broken</option>
+            <option>Item Damaged</option>
+            <option>No Packing</option>
+          </select>
+        </td>
+        <td><input class="form-control form-control-sm" type="text" placeholder="Enter Here"></td>
+        <td><div class="checkbox checkbox-success"><input type="checkbox" id="checkbox1" class="styled" onclick="othername();"><label></label></div></td>
+      </tr>
+      {% endfor %}
+      -->
+      
+    <!-- NOT USED -->  
+    <!-- Harcoded body -->
+    <!--
+      <tr>
+        <td>LTN1</td>
+        <td>B0000934FH</td>
+        <td>iPhone 10 64 GB Black</td>
+        <td>Wireless Smartphone</td>
+        <td>P-2-F23D23</td>
+        <td>15467</td>
+        <td>1932</td>
+        <td>2018-26</td>
+        <td>DAMAGE_ITEM</td>
+        <td>
+          <select class="custom-select" style="width:100%;">
+            <option>Glass Broken</option>
+            <option>Item Damaged</option>
+            <option>No Packing</option>
+          </select>
+        </td>
+        <td><input class="form-control form-control-sm" type="text" placeholder="Enter Here"></td>
+        <td><div class="checkbox checkbox-success"><input type="checkbox" id="checkbox1" class="styled" onclick="othername();"><label></label></div></td>
+      </tr>
+      <tr>
+        <td>EUK5</td>
+        <td>B0000934FH</td>
+        <td>iPhone 10 64 GB Black</td>
+        <td>Wireless Smartphone</td>
+        <td>P-1-A67B92</td>
+        <td>20893</td>
+        <td>1868</td>
+        <td>2018-25</td>
+        <td>WRONG_ITEM</td>
+        <td>
+          <select class="custom-select" style="width:100%;">
+            <option>Glass Broken</option>
+            <option>Item Damaged</option>
+            <option>No Packing</option>
+          </select>
+        </td>
+        <td><input class="form-control form-control-sm" type="text" placeholder="Enter Here"></td>
+        <td><div class="checkbox checkbox-success"><input type="checkbox" id="checkbox2" class="styled"><label></label></div></td>
+      </tr>
+      <tr>
+        <td>BHX1</td>
+        <td>B0000934FH</td>
+        <td>iPhone 10 64 GB Black</td>
+        <td>Wireless Smartphone</td>
+        <td>P-2-C82F45</td>
+        <td>21421</td>
+        <td>1932</td>
+        <td>2018-25</td>
+        <td>DAMAGE_ITEM</td>
+        <td>
+          <select class="custom-select" style="width:100%;">
+            <option>Glass Broken</option>
+            <option>Item Damaged</option>
+            <option>No Packing</option>
+          </select>
+        </td>
+        <td><input class="form-control form-control-sm" type="text" placeholder="Enter Here"></td>
+        <td><div class="checkbox checkbox-success"><input type="checkbox" id="checkbox3" class="styled"><label></label></div></td>
+      </tr>
+      <tr>
+        <td>BHX2</td>
+        <td>B00009GHBA</td>
+        <td>Samsung Smart TV</td>
+        <td>Electronics</td>
+        <td>P-2-C82F45</td>
+        <td>14820</td>
+        <td>2235</td>
+        <td>2018-25</td>
+        <td>DAMAGE_ITEM</td>
+        <td>
+          <select class="custom-select" style="width:100%;">
+            <option>Glass Broken</option>
+            <option>Item Damaged</option>
+            <option>No Packing</option>
+          </select>
+        </td>
+        <td><input class="form-control form-control-sm" type="text" placeholder="Enter Here"></td>
+        <td><div class="checkbox checkbox-success"><input type="checkbox" id="checkbox4" class="styled"><label></label></div></td>
+      </tr>
+      <tr>
+        <td>EDI4</td>
+        <td>B00009GHBA</td>
+        <td>Samsung Smart TV</td>
+        <td>Electronics</td>
+        <td>P-1-Y67G81</td>
+        <td>21452</td>
+        <td>3421</td>
+        <td>2018-26</td>
+        <td>WRONG_ITEM</td>
+        <td>
+          <select class="custom-select" style="width:100%;">
+            <option>Glass Broken</option>
+            <option>Item Damaged</option>
+            <option>Not Enough Packing</option>
+          </select>
+        </td>
+        <td><input class="form-control form-control-sm" type="text" placeholder="Enter Here"></td>
+        <td><div class="checkbox checkbox-success"><input type="checkbox" id="checkbox5" class="styled"><label></label></div></td>
+      </tr>
+      <tr>
+        <td>LCY1</td>
+        <td>B00009GHBA</td>
+        <td>Samsung Smart TV</td>
+        <td>Electronics</td>
+        <td>P-3-H67V54</td>
+        <td>13467</td>
+        <td>3924</td>
+        <td>2018-25</td>
+        <td>DAMAGE_ITEM</td>
+        <td>
+          <select class="custom-select" style="width:100%;">
+            <option>Glass Broken</option>
+            <option>Item Damaged</option>
+            <option>Not Enough Packing</option>
+          </select>
+        </td>
+        <td><input class="form-control form-control-sm" type="text" placeholder="Enter Here"></td>
+        <td><div class="checkbox checkbox-success"><input type="checkbox" id="checkbox6" class="styled"><label></label></div></td>
+      </tr>
+      <tr>
+        <td>FRA3</td>
+        <td>B00009ABCD</td>
+        <td>USPA Black Polo</td>
+        <td>Apparel and Clothing</td>
+        <td>P-1-G67H87</td>
+        <td>11342</td>
+        <td>456</td>
+        <td>2018-26</td>
+        <td>DAMAGE_ITEM</td>
+        <td>
+          <select class="custom-select" style="width:100%;">
+            <option>Glass Broken</option>
+            <option>Item Damaged</option>
+            <option>Not Enough Packing</option>
+          </select>
+        </td>
+        <td><input class="form-control form-control-sm" type="text" placeholder="Enter Here"></td>
+        <td><div class="checkbox checkbox-success"><input type="checkbox" id="checkbox7" class="styled"><label></label></div></td>
+      </tr>
+    </tbody>
+    -->
+    
+  </table>
+    </div>
+  <center><div id ="paging"></div></center>
+    
+  <!-- Modal -->
+  <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Customer Comments</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="exampleModalBody" >
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>	
+
+<!-- Storing the data and displaying the table/filters -->
+<script>
+var dataTableData;
+$(document).ready(function(){
+	dataTableData = JSON.parse(localStorage.getItem('myViewStorage1'));
+	
+	//If we don't have the data in local storage
+	if(!dataTableData) {
+		dataTableData = [{
+    			"FC_Type": "Sortable",
+    			"Region": "UK",
+    			"Warehouse_ID": "LTN1",
+    			"ASIN": "B0000934FH",
+    			"Item_Name": "iPhone 10 64 GB Black",
+    			"Product_Group": "Wireless Smartphone",
+    			"Bin_ID": "P-2-F23D23",
+    			"Conc_Units_Week": "4",
+    			"Ship_Units_Week": "700",
+    			"Concession_Week": "2018-26",			
+    			"Concession_Reason": "DAMAGE_ITEM",
+    			"Customer_Comments": "The phone was damaged from both the ends",	
+    			"Cost_Week": "1932",
+    			"DPMO_6_Month": "15897",
+    			"Cost_USD_6_Month": "40765"
+    		}, {
+    			"FC_Type": "Sortable",
+    			"Region": "UK",
+    			"Warehouse_ID": "EUK5",
+    			"ASIN": "B0000934FH",
+    			"Item_Name": "iPhone 10 64 GB Black",
+    			"Product_Group": "Wireless Smartphone",
+    			"Bin_ID": "P-1-A67B92",
+    			"Conc_Units_Week": "3",
+    			"Ship_Units_Week": "856",
+    			"Concession_Week": "2018-25",
+    			"Concession_Reason": "DAMAGE_ITEM",
+    			"Customer_Comments": "The phone was found completely broken",
+    			"Cost_Week": "1176",
+    			"DPMO_6_Month": "17895",
+    			"Cost_USD_6_Month": "34786"
+    		}, {
+    			"FC_Type": "Sortable",
+    			"Region": "UK",
+    			"Warehouse_ID": "BHX1",
+    			"ASIN": "B0000934FH",
+    			"Item_Name": "iPhone 10 64 GB Black",
+    			"Product_Group": "Wireless Smartphone",
+    			"Bin_ID": "P-1-B87Z92",
+    			"Conc_Units_Week": "2",
+    			"Ship_Units_Week": "568",
+    			"Concession_Week": "2018-26",
+    			"Concession_Reason": "WRONG_ITEM",
+    			"Customer_Comments": "I got an iPhone 8 instead of an iPhone 10",
+    			"Cost_Week": "1868",
+    			"DPMO_6_Month": "20675",
+    			"Cost_USD_6_Month": "40765"
+    		}, {
+    			"FC_Type": "Non-Sortable",
+    			"Region": "UK",
+    			"Warehouse_ID": "BHX2",
+    			"ASIN": "B0000GHBA",
+    			"Item_Name": "Samsung Smart TV",
+    			"Product_Group": "Electronics",
+    			"Bin_ID": "P-2-C82F45",
+    			"Conc_Units_Week": "3",
+    			"Ship_Units_Week": "352",
+    			"Concession_Week": "2018-25",
+    			"Concession_Reason": "DAMAGE_ITEM",
+    			"Customer_Comments": "The screen of the television was cracked",
+    			"Cost_Week": "2235",
+    			"DPMO_6_Month": "15692",
+    			"Cost_USD_6_Month": "65845"
+    		}, {
+    			"FC_Type": "Non-Sortable",
+    			"Region": "UK",
+    			"Warehouse_ID": "EDI4",
+    			"ASIN": "B0000GHBA",
+    			"Item_Name": "Samsung Smart TV",
+    			"Product_Group": "Electronics",
+    			"Bin_ID": "P-1-Y67G81",
+    			"Conc_Units_Week": "2",
+    			"Ship_Units_Week": "423",
+    			"Concession_Week": "2018-26",
+    			"Concession_Reason": "WRONG_ITEM",
+    			"Customer_Comments": "I got a philips television instead",
+    			"Cost_Week": "3421",
+    			"DPMO_6_Month": "19674",
+    			"Cost_USD_6_Month": "57893"
+    		}, {
+    			"FC_Type": "Non-Sortable",
+    			"Region": "UK",
+    			"Warehouse_ID": "LCY1",
+    			"ASIN": "B0000GHBA",
+    			"Item_Name": "Samsung Smart TV",
+    			"Product_Group": "Electronics",
+    			"Bin_ID": "P-3-H67V54",
+    			"Conc_Units_Week": "4",
+    			"Ship_Units_Week": "623",
+    			"Concession_Week": "2018-25",
+    			"Concession_Reason": "DAMAGE_ITEM",
+    			"Customer_Comments": "The televison was chipped from the edges",
+    			"Cost_Week": "3924",
+    			"DPMO_6_Month": "23544",
+    			"Cost_USD_6_Month": "70672"
+    		}, {
+    			"FC_Type": "Fashion",
+    			"Region": "EU",
+    			"Warehouse_ID": "FRA3",
+    			"ASIN": "B0000ABCD",
+    			"Item_Name": "USPA black polo",
+    			"Product_Group": "Apparel and Clothing",
+    			"Bin_ID": "P-1-G67H87",
+    			"Conc_Units_Week": "7",
+    			"Ship_Units_Week": "1045",
+    			"Concession_Week": "2018-26",
+    			"Concession_Reason": "WRONG_ITEM",
+    			"Customer_Comments": "The polo that I recieved was blue in color",
+    			"Cost_Week": "456",
+    			"DPMO_6_Month": "16782",
+    			"Cost_USD_6_Month": "23657"
+    		}
+	    ];
+	}
+	
+	var RootCauseOptions = ["", "Glass Broken", "Item Damaged", "No Packing"];
+	
+	//Use dataTable plugin to set the data, columns and pagesize
+	var dataTableOptions = {
+		"rowId": "Bin_ID",
+		"data" : dataTableData,
+		"columns": [
+			{ "data": "Warehouse_ID" },
+			{ "data": "ASIN" },
+			{ "data": "Item_Name" },
+			{ "data": "Product_Group" },
+			{ "data": "Bin_ID" },
+			{ "data": "DPMO_6_Month" },
+			{ "data": "Cost_USD_6_Month" },
+			{ "data": "Concession_Week" },
+			{ "data": "Concession_Reason", render: function(row, type, data) {
+				return '<span class="clickableSpan" title="Click for the customer comments" onclick="concenssionReasonClick(\'Customer Comments\',\''+data.Customer_Comments+'\')">'+ data.Concession_Reason +'</span>';
+			}},
+			{ "data": null, orderable: false, render: function(row, type, data, meta) { 
+				var optText = "";
+				for(var i=0; i<RootCauseOptions.length; i++) {
+					optText += '<option ' + (data.rootCause===RootCauseOptions[i]?'selected':'')  + ' value="'+ RootCauseOptions[i] +'">' + RootCauseOptions[i] + '</option>';
+				}
+				return '<select class="custom-select " style="width:100%;" onchange="update('+meta.row+',\'rootCause\', this)" >'+ optText + '</select>'; 
+			}},
+			{ "data": null, orderable: false, render: function(row, type, data, meta) { 
+				var vText = data.comment ? 'value="'+ data.comment +'"' : 'value=""';
+				return '<input class="form-control form-control-sm " type="text" placeholder="Enter Here" '+ vText +' onkeyup="update('+meta.row+',\'comment\',this)" />';
+			}},
+			{ "data": null, orderable: false, render: function(row, type, data, meta) { 
+				var chk = (data.binCheck === "Y") ? 'checked="checked"' : '';
+				return '<div class="checkbox checkbox-success"><input type="checkbox" id="checkbox7" class="styled " '+ chk +' onchange="update('+meta.row+',\'binCheck\', this)" value="'+ (!data.binCheck?'':data.binCheck)  +'" /></div>'; 
+			}}
+		  ],
+		  pageSize: 5,	
+	};
+	
+	var mTable = $('#myTable').DataTable(dataTableOptions);
+	
+	//Filters using the yadcf plugin
+  yadcf.init(mTable, [
+    {column_number : 0, filter_container_id : "FCSelect", filter_reset_button_text: false, filter_default_label: "FC"},
+    {column_number : 1, filter_container_id : "ASINSelect", filter_reset_button_text: false, filter_default_label: "ASIN"},
+    {column_number : 5, filter_type: "range_number", filter_container_id : "DPMOThreshold", 
+    html_data_type: "value", filter_reset_button_text : false},
+    {column_number : 7, filter_container_id : "ConcWeek", filter_reset_button_text: false, filter_default_label: "Week"},
+    {column_number : 8, filter_container_id : "WrongDam", filter_reset_button_text: false, filter_default_label: "Wrong Item/Damage"}
+  ]);
+	
+	//table2excel plugin to export the data
+	$("#exportButton").click(function () {
+		var clonedMyTable = $("#myTable").clone();
+		$(clonedMyTable).attr("id", "clonedMyTable");
+		//There's no exclude_select in table2excel plugin 
+		//So handle it here
+		$("select", clonedMyTable).each(function(idx, ele) {
+			var value = $(ele).val();
+			$(ele).after("<span>"+value+"</span>");
+			$(ele).remove(); //remove the select!
+		});
+		$(clonedMyTable).table2excel({
+		  exclude_inputs: true, //will remove the text/checkbox
+		  name: "Bincheck View Data",
+		  filename: "Bincheck View" 
+		})
+	});
+   
+  //Save to local storage on clicking
+  $("#saveButton").click(function () {
+		localStorage.setItem('myViewStorage1', JSON.stringify(dataTableData));
+		alert("Data Saved successfully!");
+   });
+    
+});
+//Display the Customer comments
+function concenssionReasonClick(title, msg) {
+		$("#exampleModalLabel").text(title);
+		$("#exampleModalBody").text(msg);
+		$("#alertModal").modal({show:true});
+};
+//will update the original data object, ignore the filtered html table
+function update(ridx, fieldName, elem) {
+	var value = '';
+	switch(elem.type) {
+		case "text":
+			 value = $(elem).val();
+			 $(elem).attr("value", value);//set in maskup
+			break;
+		case "checkbox":
+			value = $(elem).is(":checked") ? 'Y' : 'N';
+			$(elem).val(value);
+			if(value==='Y') $(elem).attr('checked','checked');
+			else $(elem).removeAttr('checked');
+			break;
+		case "select-one":
+		case "select":
+			value = $(elem).val();
+			$("option[value='" + value + "']", $(elem))
+				.attr("selected", true)
+				.siblings().removeAttr("selected");
+	}
+	dataTableData[ridx][fieldName] = value;
+	console.log(ridx, fieldName, dataTableData[ridx][fieldName]);
+};
+</script>
+
+<!-- Styling for elements -->
+<style type="text/css">
+  .clickableSpan {
+	text-decoration: underline;
+	cursor: pointer;
+  }
+  .checkbox {
+    margin-left: 20px;
+  }
+  .table {
+    font-size: 12px;
+  }
+  .custom-select {
+    height: 70%;
+    font-size: 12px;
+    font: Arial;
+  }
+  
+  .form-control.form-control-sm {
+    height: 120%;
+    font-size: 12px;
+  }
+  
+  .table-title {
+		color: #fff;
+		background: #4b5366;		
+		padding: 16px 25px;
+		margin: 20px -25px 10px;
+		border-radius: 3px 3px 0 0;
+  }
+    
+  .table-title h2 {
+		margin: 7px 0 0;
+		font-size: 26px;
+	 }
+	 
+	.table-title .btn {		
+	  float: right;
+		font-size: 13px;
+		border: none;
+		margin-left: 10px;
+	}
+	
+	.table-title .btn i {
+		float: left; 
+		font-size: 21px;
+		margin-right: 5px;
+	}
+	
+	.table-title .btn span {
+		float: left; 
+		font-size: 18px;
+		margin-top: 2px;
+	}
+  .form-group{
+   float: left;
+   margin-left:-5px;
+   margin-right: -5px;
+  }
+  
+  #FCSelect {
+    margin-left: 305px;
+    margin-top: 8px;
+    height: 100%;
+    width: 90%;
+  }
+  
+  #ASINSelect {
+    margin-left: 25px;
+    margin-top: 8px;
+    height: 100%;
+    width: 90%;
+  }
+  
+  #DPMOThreshold {
+    margin-left: 25px;
+    margin-top: 8px;
+    height: 100%;
+    width: 90%;
+  }
+  
+  #ConcWeek {
+    margin-left: 25px;
+    margin-top: 8px;
+    height: 80%;
+    width:90%;
+  }
+  
+  #WrongDam {
+    margin-left: 25px;
+    margin-top: 8px;
+    height: 80%;
+    width:90%;
+  }
+  
+  #myInput {
+    margin-left: 25px;
+    margin-top: 8px;
+    height: 80%;
+    width: 80%;
+  }
+  
+  #myBt {
+    margin-left: 25px;
+    margin-top: 8px;
+    height: 80%;
+  }
+  
+  #myBt2 {
+    margin-left: 25px;
+    margin-top: 8px;
+    height: 80%;
+  }
+  
+</style>
+<style>
+	span.forexcel {
+		display: none;
+	}
+  </style>
+
+<!-- NOT USED -->
+<!-- Created standard/other filters and frontend -->
+<script>
+$(document).ready(function(){
+  /*var valueASIN, valueDPMO;
+  
+  $("#ASIN").on("click", function() {
+    valueASIN = this;
+  });
+    
+  $('#myInput').keyup(function() {
+    var that = this;
+    $.each($('tr'),
+    function(i, val) {
+        if ($(val).text().indexOf($(that).val()) == -1 && i!=0) {
+            $('tr').eq(i).hide();
+        } else {
+            $('tr').eq(i).show();
+        }
+    });
+  });
+  
+  $("#DPMOThreshold").on("click", function() {
+    valueDPMO = this
+  });
+   
+   $("#myBt").on("click", function() {
+      $.each($('tr'),
+      function(i, val) {
+        if (i!=0) {
+          var customerId = $('tr').eq(i).find('td').eq(2)
+          if ($(val).text().indexOf($(valueASIN).val()) == -1 && $(valueASIN).val() != "ASIN") 
+              $('tr').eq(i).hide();
+          else if(parseInt(customerId.text().replace(/([^0-9\\.])/g,"")) < parseInt($(valueDPMO).val()) && $(valueDPMO).val() != "DPMO")  
+            $('tr').eq(i).hide();
+          else 
+            $('tr').eq(i).show();
+        }
+      });
+   });
+   
+   $("#myBt2").on("click", function() {
+    $.each($('tr'),
+    function(i, val) {
+      $('tr').eq(i).show();
+    });
+   });
+   
+   function othername() {
+    var input = document.getElementById("checkbox1").value;
+    alert(input);
+   }
+   
+   $("#exportButton").click(function () {
+    $("#myTable").table2excel({
+	    // exclude CSS class
+	    name: "Bincheck View Data",
+	    filename: "Bincheck View" //do not include extension
+	  }); 
+   });
+   
+   $("#saveButton").click(function () {
+    var table = $('#myTable').tableToJSON( 
+      { 
+        extractor : function(cellIndex, $cell) {
+        return $cell.find('span').text() || $cell.text();
+        }
+      });
+    alert(JSON.stringify(table));
+   });*/
+   
+   /*
+   $('#myTable').datatable({
+    pageSize: 5,
+    sort: [true, true, true, true, true, true, true, true, false, false, false, false],
+    filters: {
+      0 : 'select', 
+      1 : true, //{ element : $("#ASIN"), values : {B0000934FH: "B0000934FH", B00009HYTD: "B00009HYTD"} },
+      2 : false,
+      3 : false,
+      4 : false,
+      5 : { values: ['   ', '15K', '20K'],
+            fn: function (data, selected) { 
+              if (selected.length === 1) {
+                if (selected[0] === "0") {
+                  return data
+                }
+                else if (selected[0] == "1") {
+                  return data >= 15000;
+                }
+                else {
+                  return data >= 20000;
+                }
+            } 
+            return true;
+           }
+          }, 
+      6 : false,
+      7 : 'select',
+      8 : 'select',
+      9 : false,
+      10: false,
+      11: false
+    },
+    pagingDivSelector: "#paging",
+    paginDivClass: "pagination pagination-centered"
+   });
+   
+   //Table to JSON
+   function tableToJson(myTable) {
+      var data = [];
+      // first row needs to be headers
+      var headers = [];
+    
+      for (var i=0; i<table.rows[0].cells.length; i++) {
+        headers[i] = table.rows[0].cells[i].innerHTML.toLowerCase().replace(/ /gi,'');
+      }
+      // go through cells
+      for (var i=1; i<table.rows.length; i++) {
+        var tableRow = table.rows[i];
+        var rowData = {};
+        for (var j=0; j<tableRow.cells.length; j++) {
+            rowData[ headers[j] ] = tableRow.cells[j].innerHTML;
+        }
+        data.push(rowData);
+      }       
+    alert(data);
+    return data;
+    }*/
+}); 
+</script>
+
+<!-- NOT USED -->
+<!-- Parses the data and converts to JSON -->
+<script>
+/*
+$(document).ready(function(){
+    $("#saveButton").on('click',function(){
+ 
+	   var arrData=[];
+	   // loop over each table row (tr)
+	   $("#myTable tr").each(function(index){
+	   
+		   if(index == 0) {
+			return true;
+			}
+			
+			if(index == 1) {
+			return true;
+			}
+			
+			var currentRow=$(this);
+			
+			//console.log("currentRow::" + currentRow.text());
+		
+			var col1_value=currentRow.find("td:eq(0)").text();
+					
+			var col2_value=currentRow.find("td:eq(1)").text();
+			
+			var col3_value=currentRow.find("td:eq(2)").text();
+			var col4_value=currentRow.find("td:eq(3)").text();
+			var col5_value=currentRow.find("td:eq(4)").text();
+			var col6_value=currentRow.find("td:eq(5)").text();
+			var col7_value=currentRow.find("td:eq(6)").text();
+			var col8_value=currentRow.find("td:eq(7)").text();
+			var col9_value=currentRow.find("td:eq(8)").text();
+			var col10_value=currentRow.find("td:eq(9)").find("select option:selected").text();
+			
+			var col11_value=currentRow.find("td:eq(10)").find('input[type="text"]').val();
+			var col12_value="N";
+		 
+			 if(currentRow.find("td:eq(11)").find('input[type="checkbox"]').is(':checked')){
+				col12_value="Y";
+			 }		 
+			var obj={};
+			
+			obj.col1=col1_value;
+			obj.col2=col2_value;
+			obj.col3=col3_value;			
+			obj.col4=col4_value;
+			obj.col5=col5_value;
+			obj.col6=col6_value;
+			obj.col7=col7_value;
+			obj.col8=col8_value;
+			obj.col9=col9_value;
+			obj.col10=col10_value;
+			obj.col11=col11_value;
+			obj.col12=col12_value;
+			
+			arrData.push(obj);
+	   });
+		//alert(arrData);
+		alert(JSON.stringify(arrData));
+		localStorage.setItem('myViewStorage1', JSON.stringify(arrData));
+	});
+});
+*/
+</script>
+
+<!-- NOT USED -->
+<!-- Hardcoded Data -->
+<script type="application/json" id="data">
+	"data": [{
+			"FC_Type": "Sortable",
+			"Region": "UK",
+			"Warehouse_ID": "LTN1",
+			"ASIN": "B0000934FH",
+			"Item_Name": "iPhone 10 64 GB Black",
+			"Product_Group": "Wireless Smartphone",
+			"Bin_ID": "P-2-F23D23",
+			"Conc_Units_Week": "4",
+			"Ship_Units_Week": "700",
+			"Concession_Week": "2018-26",
+			"Concession_Reason": "DAMAGE_ITEM",
+			"Cost_Week": "1932",
+			"DPMO_6_Month": "15897",
+			"Cost_USD_6_Month": "40765"
+		}, {
+			"FC_Type": "Sortable",
+			"Region": "UK",
+			"Warehouse_ID": "EUK5",
+			"ASIN": "B0000934FH",
+			"Item_Name": "iPhone 10 64 GB Black",
+			"Product_Group": "Wireless Smartphone",
+			"Bin_ID": "P-1-A67B92",
+			"Conc_Units_Week": "3",
+			"Ship_Units_Week": "856",
+			"Concession_Week": "2018-25",
+			"Concession_Reason": "DAMAGE_ITEM",
+			"Cost_Week": "1176",
+			"DPMO_6_Month": "17895",
+			"Cost_USD_6_Month": "34786"
+		}, {
+			"FC_Type": "Sortable",
+			"Region": "UK",
+			"Warehouse_ID": "BHX1",
+			"ASIN": "B0000934FH",
+			"Item_Name": "iPhone 10 64 GB Black",
+			"Product_Group": "Wireless Smartphone",
+			"Bin_ID": "P-1-B87Z92",
+			"Conc_Units_Week": "2",
+			"Ship_Units_Week": "568",
+			"Concession_Week": "2018-26",
+			"Concession_Reason": "WRONG_ITEM",
+			"Cost_Week": "1868",
+			"DPMO_6_Month": "20675",
+			"Cost_USD_6_Month": "40765"
+		}, {
+			"FC_Type": "Non-Sortable",
+			"Region": "UK",
+			"Warehouse_ID": "BHX2",
+			"ASIN": "B0000GHBA",
+			"Item_Name": "Samsung Smart TV",
+			"Product_Group": "Electronics",
+			"Bin_ID": "P-2-C82F45",
+			"Conc_Units_Week": "3",
+			"Ship_Units_Week": "352",
+			"Concession_Week": "2018-25",
+			"Concession_Reason": "DAMAGE_ITEM",
+			"Cost_Week": "2235",
+			"DPMO_6_Month": "15692",
+			"Cost_USD_6_Month": "65845"
+		}, {
+			"FC_Type": "Non-Sortable",
+			"Region": "UK",
+			"Warehouse_ID": "EDI4",
+			"ASIN": "B0000GHBA",
+			"Item_Name": "Samsung Smart TV",
+			"Product_Group": "Electronics",
+			"Bin_ID": "P-1-Y67G81",
+			"Conc_Units_Week": "2",
+			"Ship_Units_Week": "423",
+			"Concession_Week": "2018-26",
+			"Concession_Reason": "WRONG_ITEM",
+			"Cost_Week": "3421",
+			"DPMO_6_Month": "19674",
+			"Cost_USD_6_Month": "57893"
+		}, {
+			"FC_Type": "Non-Sortable",
+			"Region": "UK",
+			"Warehouse_ID": "LCY1",
+			"ASIN": "B0000GHBA",
+			"Item_Name": "Samsung Smart TV",
+			"Product_Group": "Electronics",
+			"Bin_ID": "P-3-H67V54",
+			"Conc_Units_Week": "4",
+			"Ship_Units_Week": "623",
+			"Concession_Week": "2018-25",
+			"Concession_Reason": "DAMAGE_ITEM",
+			"Cost_Week": "3924",
+			"DPMO_6_Month": "23544",
+			"Cost_USD_6_Month": "70672"
+		}, {
+			"FC_Type": "Fashion",
+			"Region": "EU",
+			"Warehouse_ID": "FRA3",
+			"ASIN": "B0000ABCD",
+			"Item_Name": "USPA black polo",
+			"Product_Group": "Apparel and Clothing",
+			"Bin_ID": "P-1-G67H87",
+			"Conc_Units_Week": "7",
+			"Ship_Units_Week": "1045",
+			"Concession_Week": "2018-26",
+			"Concession_Reason": "WRONG_ITEM",
+			"Cost_Week": "456",
+			"DPMO_6_Month": "16782",
+			"Cost_USD_6_Month": "23657"
+		}
+	]
+</script>
+
+</body>  
+</html>

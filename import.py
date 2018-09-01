@@ -7,8 +7,8 @@ app = Flask(__name__)
 def index():
     return url_for('show_user', username = 'Akshay') #reference the function not URL
  
-#2 - GET Contains username in the url    
-@app.route('/login', methods=['GET'])
+#2 - GET Contains username in the url, can't do    
+@app.route('/lgin', methods=['GET'])
 def login():
     if request.values:
         return "Username is " + request.values["username"]
